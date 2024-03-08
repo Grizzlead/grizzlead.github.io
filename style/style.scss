@@ -1,0 +1,31 @@
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    border-bottom: 1px solid #000;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.center {
+    padding-left: calc(50% - 570px);
+    padding-right: calc(50% - 570px);
+}
+
+.goods-list {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.goods-item {
+    width: 300px;
+    min-height: 360px;
+    padding: 5px;
+    border: 1px solid #000;
+}
