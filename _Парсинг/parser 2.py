@@ -32,7 +32,7 @@ def info_players(side):
 # driver.get(url="https://www.dotabuff.com/matches/" + code)
 # page_source = driver.page_source
 
-# with open('main.html', 'w', encoding='utf-8') as file:
+# with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
 #     file.write(page_source)
 
 # driver.quit()
@@ -41,7 +41,7 @@ def info_players(side):
 # driver.get(url="https://www.dotabuff.com/matches/" + code + '/kills')
 # page_source = driver.page_source
 
-# with open('death_log.html', 'w', encoding='utf-8') as file:
+# with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
 #     file.write(page_source)
 
 # driver.quit()
@@ -50,24 +50,24 @@ def info_players(side):
 # driver.get(url="https://www.dotabuff.com/matches/" + code + '/objectives')
 # page_source = driver.page_source
 
-# with open('log_obj.html', 'w', encoding='utf-8') as file:
+# with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
 #     file.write(page_source)
 
 # driver.quit()
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
-with open('main.html', 'r', encoding='utf-8') as file:
+with open('_Парсинг/main.html', 'r', encoding='utf-8') as file:
     html_main = file.read()
 
 soup_main = BeautifulSoup(html_main, 'lxml')
 
-with open('log_obj.html', 'r', encoding='utf-8') as file:
+with open('_Парсинг/log_obj.html', 'r', encoding='utf-8') as file:
     html_obj = file.read()
 
 soup_obj = BeautifulSoup(html_obj, 'lxml')
-print(soup_obj)
-with open('death_log.html', 'r', encoding='utf-8') as file:
+
+with open('_Парсинг/death_log.html', 'r', encoding='utf-8') as file:
     html_kills = file.read()
 
 soup_kills = BeautifulSoup(html_kills, 'lxml')
