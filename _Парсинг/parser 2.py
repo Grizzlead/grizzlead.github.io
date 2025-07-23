@@ -25,7 +25,7 @@ def info_players(side):
         print(f"{player['hero']:20} - {player['role']:15} / {player['kda']} - {str(player['gold']) + 'k':10} / {player['line']:20} / {player['name']:30} / {player['aspect']}")
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8385904869"
+# code="8385995426"
 
 # driver = webdriver.Chrome()
 
@@ -66,7 +66,7 @@ with open('log_obj.html', 'r', encoding='utf-8') as file:
     html_obj = file.read()
 
 soup_obj = BeautifulSoup(html_obj, 'lxml')
-
+print(soup_obj)
 with open('death_log.html', 'r', encoding='utf-8') as file:
     html_kills = file.read()
 
