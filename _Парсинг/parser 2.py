@@ -25,7 +25,7 @@ def info_players(side):
         print(f"{player['hero']:20} - {player['role']:15} / {player['kda']} - {str(player['gold']) + 'k':10} / {player['line']:20} / {player['name']:30} / {player['aspect']}")
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8390308628"
+# code="8392908702"
 
 # driver = webdriver.Chrome()
 
