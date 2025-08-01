@@ -25,7 +25,7 @@ def info_players(side):
         print(f"{player['hero']:20} - {player['role']:15} / {player['kda']} - {str(player['gold']) + 'k':10} / {player['line']:20} / {player['name']:30} / {player['aspect']}")
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8397048058"
+# code="8397830316"
 
 # driver = webdriver.Chrome()
 
@@ -108,6 +108,19 @@ for item in aegis:
 # 4. Towers
 towers = soup_obj.select("div.line:has(.tower)")
 print(f'\nLog {len(towers)} destroys towers:')
+first_tower = None
+for tower in towers:
+    lst = tower.select('.event')[0].text.split()
+    side = ('Dire', 'Radiant')[len(tower.select('.object.color-faction-radiant'))]
+    lst.insert(0, f'({side} - {teams[side]})')
+    out = f'{tower.select(".time")[0].text} {" ".join(lst)}'
+    if first_tower is None:
+        first_tower = out
+    print(out)
+
+# 4.5. Barracks
+towers = soup_obj.select("div.line:has(.barracks)")
+print(f'\nLog {len(towers)} destroys barracks:')
 first_tower = None
 for tower in towers:
     lst = tower.select('.event')[0].text.split()
