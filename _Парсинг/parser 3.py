@@ -24,36 +24,46 @@ def info_players(side):
     for player in sorted(heroes, key=lambda x: x['gold'], reverse=True):
         print(f"{player['hero']:20} - {player['role']:15} / {player['kda']} - {str(player['gold']) + 'k':10} / {player['line']:20} / {player['name']:30} / {player['aspect']}")
 
+def info_objectives(objective):
+    result = []
+    lst = objective.select('.event')[0].text.split()
+    if 'spawned' not in lst:
+        side = ('Dire', 'Radiant')[len(objective.select('.object.color-faction-radiant'))]
+        lst.insert(0, f'({side} - {teams[side]})')
+    out = f'{objective.select(".time")[0].text} {" ".join(lst)}'
+    result.append(out)
+    return result
+
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8398452585"
+# code="8401412814"
 
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome()
 
-driver.get(url="https://www.dotabuff.com/matches/" + code)
-page_source = driver.page_source
+# driver.get(url="https://www.dotabuff.com/matches/" + code)
+# page_source = driver.page_source
 
-with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
-    file.write(page_source)
+# with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
+#     file.write(page_source)
 
-driver.quit()
-driver = webdriver.Chrome()
+# driver.quit()
+# driver = webdriver.Chrome()
 
-driver.get(url="https://www.dotabuff.com/matches/" + code + '/kills')
-page_source = driver.page_source
+# driver.get(url="https://www.dotabuff.com/matches/" + code + '/kills')
+# page_source = driver.page_source
 
-with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
-    file.write(page_source)
+# with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
+#     file.write(page_source)
 
-driver.quit()
-driver = webdriver.Chrome()
+# driver.quit()
+# driver = webdriver.Chrome()
 
-driver.get(url="https://www.dotabuff.com/matches/" + code + '/objectives')
-page_source = driver.page_source
+# driver.get(url="https://www.dotabuff.com/matches/" + code + '/objectives')
+# page_source = driver.page_source
 
-with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
-    file.write(page_source)
+# with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
+#     file.write(page_source)
 
-driver.quit()
+# driver.quit()
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -78,60 +88,56 @@ team_radiant = soup_main.select_one('.team-results .radiant header .team-text-fu
 team_dire = soup_main.select_one('.team-results .dire header .team-text-full').text
 teams = {'Radiant':team_radiant, 'Dire':team_dire}
 
-# 2. Roshans
+# 2. Objectives
+objectives = soup_obj.select(f"div.line")
+info_roshans, info_aegis, info_towers, info_barracks, info_rune_wisdom, info_active_rune = [], [], [], [], [], []
+for obj in objectives:
+    if obj.select('.roshan'):
+        info_roshans.append(info_objectives(obj))
+    elif obj.select('.aegis-of-the-immortal'):
+        info_aegis.append(info_objectives(obj))
+    elif obj.select('.tower'):
+        info_towers.append(info_objectives(obj))
+    elif obj.select('.barracks'):
+        info_barracks.append(info_objectives(obj))
+    elif obj.select('.rune-wisdom'):
+        temp = info_objectives(obj)
+        if 'spawned' not in temp[0]:
+            info_rune_wisdom.append(temp)
+    elif obj.select('.rune-haste, .rune-invisibility, .rune-shield, .rune-double-damage, .rune-illusion, .rune-regeneration, .rune-arcane'):
+        info_active_rune.append(info_objectives(obj))
+
+# 2.1 Roshans
 print('\nLog Roshans:')
-roshans = soup_obj.select("div.line:has(.roshan)")
-first_roshan = None
-for roshan in roshans:
-    lst = roshan.select('.event')[0].text.split()
-    side = ('Dire', 'Radiant')[len(roshan.select('.color-faction-radiant'))]
-    lst.insert(0, f'({side} - {teams[side]})')
-    out = f'{roshan.select(".time")[0].text} {" ".join(lst)}'
-    if first_roshan is None:
-        first_roshan = out
-    print(out)
+for roshan in info_roshans:
+    print(*roshan)
 
-# 3. Aegis
+# 2.2. Aegis
 print('\nLog aegis:')
+for aegis in info_aegis:
+    print(*aegis)
 
-aegis = soup_obj.select("div.line:has(.aegis-of-the-immortal)")
-first_aegis = None
-for item in aegis:
-    lst = item.text.split()
-    side = ('Dire', 'Radiant')[len(item.select('.color-faction-radiant'))]
-    lst.insert(1, f'({side} - {teams[side]})')
-    out = ' '.join(lst)
-    if first_aegis is None:
-        first_aegis = out
-    print(out)
+# 2.3. Towers
+print(f'\nLog {len(info_towers)} destroys towers:')
+for tower in info_towers:
+    print(*tower)
 
-# 4. Towers
-towers = soup_obj.select("div.line:has(.tower)")
-print(f'\nLog {len(towers)} destroys towers:')
-first_tower = None
-for tower in towers:
-    lst = tower.select('.event')[0].text.split()
-    side = ('Dire', 'Radiant')[len(tower.select('.object.color-faction-radiant'))]
-    lst.insert(0, f'({side} - {teams[side]})')
-    out = f'{tower.select(".time")[0].text} {" ".join(lst)}'
-    if first_tower is None:
-        first_tower = out
-    print(out)
+# 2.4. Barracks
+print(f'\nLog {len(info_barracks)} destroys barracks:')
+for barrack in info_barracks:
+    print(*barrack)
 
-# 4.5. Barracks
-barracks = soup_obj.select("div.line:has(.barracks)")
-print(f'\nLog {len(barracks)} destroys barracks:')
-first_barrack = None
-for barrack in barracks:
-    lst = barrack.select('.event')[0].text.split()
-    side = ('Dire', 'Radiant')[len(barrack.select('.object.color-faction-radiant'))]
-    lst.insert(0, f'({side} - {teams[side]})')
-    out = f'{barrack.select(".time")[0].text} {" ".join(lst)}'
-    if first_barrack is None:
-        first_barrack = out
-    print(out)
+# 2.5. Rune wisdom
+print(f'\nLog rune wisdom:')
+for rune_wisdom in info_rune_wisdom:
+    print(*rune_wisdom)
 
-# 5. Kills
+# 2.6. Active rune
+print(f'\nLog active rune:')
+for active_rune in  info_active_rune:
+    print(*active_rune)
+
+# 3. Kills
 print('\nLog kills:')
 kills = soup_kills.select("div.line")
 dire_kills, radiant_kills, streaks = 0, 0, []
@@ -192,25 +198,25 @@ for kill in kills:
         if len(kill.select('.line .event a')) == 1:
             streaks.append(' '.join(kill.text.split()))
 
-# Info
+# 4. Info
 print(f'\nFirst kill:\n{first_kill}')
 print('\nKilling race:')
 for race in killing_race:
     print(race)
-print(f'\nFirst tower:\n{first_tower}')
-print(f'\nFirst aegis:\n{first_aegis}')
-print(f'\nFirst Roshan:\n{first_roshan}')
+print(f'\nFirst tower:\n{info_towers[0][0]}')
+print(f'\nFirst aegis:\n{info_aegis[0][0] if info_aegis else "No kill Roshan"}')
+print(f'\nFirst Roshan:\n{info_roshans[0][0] if info_roshans else "No kill Roshan"}')
 print('\nLog Megacreeps:')
 megacreeps = soup_obj.find(string=re.compile('megacreeps'))
 print('YES' if megacreeps else 'NO')
 
-# 6. Streaks
+# 5. Streaks
 print('\nCount streaks:')
 for streak in streaks:
     print(streak)
 
-print(f'\nКоличество Рошанов: {len(roshans)}')
-print(f'\nКоличество разрушенных башен: {len(towers)}')
+print(f'\nКоличество Рошанов: {len(info_roshans)}')
+print(f'\nКоличество разрушенных башен: {len(info_towers)}')
 
 # Time and frags
 times = soup_main.select('span.duration')
