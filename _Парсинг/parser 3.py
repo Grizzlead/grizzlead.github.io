@@ -35,35 +35,35 @@ def info_objectives(objective):
     return result
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8401412814"
+code="8402347499"
 
-# driver = webdriver.Chrome()
+driver = webdriver.Chrome()
 
-# driver.get(url="https://www.dotabuff.com/matches/" + code)
-# page_source = driver.page_source
+driver.get(url="https://www.dotabuff.com/matches/" + code)
+page_source = driver.page_source
 
-# with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
-#     file.write(page_source)
+with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
+    file.write(page_source)
 
-# driver.quit()
-# driver = webdriver.Chrome()
+driver.quit()
+driver = webdriver.Chrome()
 
-# driver.get(url="https://www.dotabuff.com/matches/" + code + '/kills')
-# page_source = driver.page_source
+driver.get(url="https://www.dotabuff.com/matches/" + code + '/kills')
+page_source = driver.page_source
 
-# with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
-#     file.write(page_source)
+with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
+    file.write(page_source)
 
-# driver.quit()
-# driver = webdriver.Chrome()
+driver.quit()
+driver = webdriver.Chrome()
 
-# driver.get(url="https://www.dotabuff.com/matches/" + code + '/objectives')
-# page_source = driver.page_source
+driver.get(url="https://www.dotabuff.com/matches/" + code + '/objectives')
+page_source = driver.page_source
 
-# with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
-#     file.write(page_source)
+with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
+    file.write(page_source)
 
-# driver.quit()
+driver.quit()
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
