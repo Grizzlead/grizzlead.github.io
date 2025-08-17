@@ -34,36 +34,39 @@ def info_objectives(objective):
     result.append(out)
     return result
 
+def scrap_site(id):
+    driver = webdriver.Chrome()
+
+    driver.get(url="https://www.dotabuff.com/matches/" + id)
+    page_source = driver.page_source
+
+    with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
+        file.write(page_source)
+
+    driver.quit()
+    driver = webdriver.Chrome()
+
+    driver.get(url="https://www.dotabuff.com/matches/" + id + '/kills')
+    page_source = driver.page_source
+
+    with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
+        file.write(page_source)
+
+    driver.quit()
+    driver = webdriver.Chrome()
+
+    driver.get(url="https://www.dotabuff.com/matches/" + id + '/objectives')
+    page_source = driver.page_source
+
+    with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
+        file.write(page_source)
+
+    driver.quit()
+
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8412348725"
+# code="8421566328"
 
-# driver = webdriver.Chrome()
-
-# driver.get(url="https://www.dotabuff.com/matches/" + code)
-# page_source = driver.page_source
-
-# with open('_Парсинг/main.html', 'w', encoding='utf-8') as file:
-#     file.write(page_source)
-
-# driver.quit()
-# driver = webdriver.Chrome()
-
-# driver.get(url="https://www.dotabuff.com/matches/" + code + '/kills')
-# page_source = driver.page_source
-
-# with open('_Парсинг/death_log.html', 'w', encoding='utf-8') as file:
-#     file.write(page_source)
-
-# driver.quit()
-# driver = webdriver.Chrome()
-
-# driver.get(url="https://www.dotabuff.com/matches/" + code + '/objectives')
-# page_source = driver.page_source
-
-# with open('_Парсинг/log_obj.html', 'w', encoding='utf-8') as file:
-#     file.write(page_source)
-
-# driver.quit()
+# scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -211,9 +214,15 @@ megacreeps = soup_obj.find(string=re.compile('megacreeps'))
 print('YES' if megacreeps else 'NO')
 
 # 5. Streaks
+log_ultrakill = 'NO'
 print('\nCount streaks:')
 for streak in streaks:
+    if '5x' in streak:
+        log_ultrakill = 'RAMPAGE'
+    elif '4x' in streak:
+        log_ultrakill = 'YES'
     print(streak)
+print(f'\nLog Ultrakill: \n{log_ultrakill}')
 
 print(f'\nКоличество Рошанов: {len(info_roshans)}')
 print(f'\nКоличество разрушенных башен: {len(info_towers)}')
