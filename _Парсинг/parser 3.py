@@ -64,9 +64,9 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8434627977"
+# code="8435936508"
 
-scrap_site(code)
+# scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ for active_rune in  info_active_rune:
 # 3. Kills
 print('\nLog kills:')
 kills = soup_kills.select("div.line")
-dire_kills, radiant_kills, streaks = 0, 0, []
+dire_kills, radiant_kills, streaks, beyond_godlike = 0, 0, [], {}
 first_kill, killing_race = None, []
 for kill in kills:
     if kill.select('.line .event .gold'):
@@ -152,22 +152,25 @@ for kill in kills:
         tormentor_kill = kill.select('span.object img[alt="Reflect"], span.object img[alt="The Shining"]')
         roshan_kill = kill.select('span.object img[alt="Roshan"]')
         suicide_kill = 'suicide' in kill.text
-        killer = kill.select('.event a:nth-child(2)')
         killed = kill.select('.event a:nth-child(1)')
-        kills = None
+        killer = kill.select('.event a:nth-child(2)')
+        assisted = kill.select('.event a:nth-child(3)')
+        kills = '*'
 
         if tower_kill or creep_kill:
             metka, out = '', ''
             if tower_kill == 'Dire Tower' or creep_kill == 'Dire Creep':
-                dire_kills += 1
-                kills = dire_kills
-                if kills in (5, 10, 15, 20) and kills > radiant_kills:
-                    metka = f'{kills}=> '
+                if not assisted:
+                    dire_kills += 1
+                    kills = dire_kills
+                    if kills in (5, 10, 15, 20) and kills > radiant_kills:
+                        metka = f'{kills}=> '
             elif tower_kill == 'Radiant Tower' or creep_kill == 'Radiant Creep':
-                radiant_kills += 1
-                kills = radiant_kills
-                if kills in (5, 10, 15, 20) and kills > dire_kills:
-                    metka = f'{kills}=> '
+                if not assisted:
+                    radiant_kills += 1
+                    kills = radiant_kills
+                    if kills in (5, 10, 15, 20) and kills > dire_kills:
+                        metka = f'{kills}=> '
             out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killer[0].text.strip()}, assisted by {killed[0].text.strip() if killed else ""}'
             if metka:
                 killing_race.append(out)
