@@ -64,9 +64,9 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8436635342"
+# code="8437230699"
 
-scrap_site(code)
+# scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ for active_rune in  info_active_rune:
 # 3. Kills
 print('\nLog kills:')
 kills = soup_kills.select("div.line")
-dire_kills, radiant_kills, streaks, beyond_godlike = 0, 0, [], {}
+dire_kills, radiant_kills, multi_kill, beyond_godlike, streaks = 0, 0, [], [], {}
 first_kill, killing_race = None, []
 for kill in kills:
     if kill.select('.line .event .gold'):
@@ -152,38 +152,45 @@ for kill in kills:
         tormentor_kill = kill.select('span.object img[alt="Reflect"], span.object img[alt="The Shining"]')
         roshan_kill = kill.select('span.object img[alt="Roshan"]')
         suicide_kill = 'suicide' in kill.text
-        killed = kill.select('.event a:nth-child(1)')
-        killer = kill.select('.event a:nth-child(2)')
-        assisted = kill.select('.event a:nth-child(3)')
+        kill_events = kill.select('.event a')
+        killed = kill_events[0].text.strip()
+        killer = kill_events[1].text.strip()
         kills = '*'
 
         if tower_kill or creep_kill:
             metka, out = '', ''
-            if tower_kill == 'Dire Tower' or creep_kill == 'Dire Creep':
-                if not assisted:
+            if len(kill_events) < 3:
+                streaks[killed] = streaks.get(killed, 0) + 1
+                streaks[killer] = 0
+                if tower_kill == 'Dire Tower' or creep_kill == 'Dire Creep':
                     dire_kills += 1
                     kills = dire_kills
                     if kills in (5, 10, 15, 20) and kills > radiant_kills:
                         metka = f'{kills}=> '
-            elif tower_kill == 'Radiant Tower' or creep_kill == 'Radiant Creep':
-                if not assisted:
+                elif tower_kill == 'Radiant Tower' or creep_kill == 'Radiant Creep':
                     radiant_kills += 1
                     kills = radiant_kills
                     if kills in (5, 10, 15, 20) and kills > dire_kills:
                         metka = f'{kills}=> '
-            out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killer[0].text.strip()}, assisted by {killed[0].text.strip() if killed else ""}'
+            out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killer}, assisted by {killed if killed else ""}'
+            for item in kill_events:
+                print(item.text.strip())
             if metka:
                 killing_race.append(out)
+            if killed in streaks and streaks[killed] > 9:
+                beyond_godlike.append(out)
             print(out)
         elif tormentor_kill:
-            print(f'{kill.select(".time")[0].text} ***(Tormentor) kills {killed[0].text.strip()}')
+            print(f'{kill.select(".time")[0].text} ***(Tormentor) kills {killed}')
         elif roshan_kill:
-            print(f'{kill.select(".time")[0].text} ***(Roshan) kills {killer[0].text.strip()}')
+            print(f'{kill.select(".time")[0].text} ***(Roshan) kills {killer}')
         elif suicide_kill:
-            print(f'{kill.select(".time")[0].text} ***(Suicide) kills {killed[0].text.strip()}')
+            print(f'{kill.select(".time")[0].text} ***(Suicide) kills {killed}')
         else:
-            side = ('Dire', 'Radiant')["color-faction-radiant" in killer[0].attrs['class']]
+            side = ('Dire', 'Radiant')["color-faction-radiant" in kill_events[1].attrs['class']]
             metka, out = '', ''
+            streaks[killer] = streaks.get(killer, 0) + 1
+            streaks[killed] = 0
             if side == 'Dire':
                 dire_kills += 1
                 kills = dire_kills
@@ -194,15 +201,17 @@ for kill in kills:
                 kills = radiant_kills
                 if kills in (5, 10, 15, 20) and kills > dire_kills:
                     metka = f'{kills}=> '
-            out = f'{kill.select(".time")[0].text} {metka}({side} - {teams[side]})-{str(kills)} {killer[0].text.strip()} kills {killed[0].text.strip()}'
+            out = f'{kill.select(".time")[0].text} {metka}({side} - {teams[side]})-{str(kills)} {killer}(#{streaks[killer]}) kills {killed}'
             if first_kill is None:
                 first_kill = out
             if metka:
-                killing_race.append(out)     
+                killing_race.append(out)    
+            if streaks[killer] > 9:
+                beyond_godlike.append(out)
             print(out)
     else:
         if len(kill.select('.line .event a')) == 1:
-            streaks.append(' '.join(kill.text.split()))
+            multi_kill.append(' '.join(kill.text.split()))
 
 # 4. Info
 print(f'\nFirst kill:\n{first_kill}')
@@ -219,11 +228,15 @@ print('YES' if megacreeps else 'NO')
 # 5. Streaks
 log_ultrakill = 'NO'
 print('\nCount streaks:')
-for streak in streaks:
+for streak in multi_kill:
     if '5x' in streak:
         log_ultrakill = 'RAMPAGE'
     elif '4x' in streak:
         log_ultrakill = 'YES'
+    print(streak)
+
+print(f'Beyond Godlike: \n{("NO","YES")[len(beyond_godlike)>0]}')
+for streak in beyond_godlike:
     print(streak)
 print(f'\nLog Ultrakill: \n{log_ultrakill}')
 
@@ -239,3 +252,5 @@ info_players('radiant')
 
 # Dire team
 info_players('dire')
+
+print(streaks)
