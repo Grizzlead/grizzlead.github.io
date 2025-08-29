@@ -146,22 +146,25 @@ kills = soup_kills.select("div.line")
 dire_kills, radiant_kills, multi_kill, beyond_godlike, streaks = 0, 0, [], [], {}
 first_kill, killing_race = None, []
 for kill in kills:
+    kill_events = kill.select('.event > a.color-faction-dire, .event > a.color-faction-radiant')
     if kill.select('.line .event .gold'):
         tower_kill = kill.find(string=re.compile('Tower'))
         creep_kill = kill.find(string=re.compile('Creep'))
         tormentor_kill = kill.select('span.object img[alt="Reflect"], span.object img[alt="The Shining"]')
         roshan_kill = kill.select('span.object img[alt="Roshan"]')
         suicide_kill = 'suicide' in kill.text
-        kill_events = kill.select('.event a')
-        killed = kill_events[0].text.strip()
-        killer = kill_events[1].text.strip()
+        
+        killed = kill_events[0].select('img')
+        killed = killed[0]['alt']
+        killer = kill_events[1].select('img')
+        killer = killer[0]['alt']
         kills = '*'
 
         if tower_kill or creep_kill:
             metka, out = '', ''
             if len(kill_events) < 3:
-                streaks[killed] = streaks.get(killed, 0) + 1
-                streaks[killer] = 0
+                streaks[killer] = streaks.get(killer, 0) + 1
+                streaks[killed] = 0
                 if tower_kill == 'Dire Tower' or creep_kill == 'Dire Creep':
                     dire_kills += 1
                     kills = dire_kills
@@ -172,9 +175,7 @@ for kill in kills:
                     kills = radiant_kills
                     if kills in (5, 10, 15, 20) and kills > dire_kills:
                         metka = f'{kills}=> '
-            out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killer}, assisted by {killed if killed else ""}'
-            for item in kill_events:
-                print(item.text.strip())
+            out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killed}, assisted by {killer if killer else ""}'
             if metka:
                 killing_race.append(out)
             if killed in streaks and streaks[killed] > 9:
