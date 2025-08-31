@@ -13,7 +13,10 @@ def info_players(side):
         lst.append(('hero', player.select("td.cell-fill-image .tw-w-auto")[0]["alt"]))
         lst.append(('aspect', player.select("td.cell-fill-image .tw-text-center")[0]["alt"]))
         role = player.select('.role-icon')
-        lst.append(('role', role[0]["title"] if role[0]["title"] else role[0]["oldtitle"]))
+        if role:
+            lst.append(('role', role[0]["title"] if role[0]["title"] else role[0]["oldtitle"]))
+        else:
+            lst.append(('role', 'No type'))
         line = ' '.join([item.text for item in player.select("td.single-lines acronym")])
         lst.append(('line', ' '.join(line.split())))
         kda = player.select(".r-group-1")
@@ -64,9 +67,9 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8437230699"
+code="8441949078"
 
-# scrap_site(code)
+scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -156,8 +159,11 @@ for kill in kills:
         
         killed = kill_events[0].select('img')
         killed = killed[0]['alt']
-        killer = kill_events[1].select('img')
-        killer = killer[0]['alt']
+        if len(kill_events) > 1:
+            killer = kill_events[1].select('img')
+            killer = killer[0]['alt']
+        else:
+            killer = ''
         kills = '*'
 
         if tower_kill or creep_kill:
