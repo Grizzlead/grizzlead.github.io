@@ -67,9 +67,9 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8444521032"
+# code="8444521032"
 
-scrap_site(code)
+# scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -181,7 +181,8 @@ for kill in kills:
                     kills = radiant_kills
                     if kills in (5, 10, 15, 20) and kills > dire_kills:
                         metka = f'{kills}=> '
-            out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killed}, assisted by {killer if killer else ""}'
+            count_kills = "-" + str(dire_kills + radiant_kills) + "- " if not ((dire_kills + radiant_kills) % 10) else ""
+            out = f'{kill.select(".time")[0].text} {metka}{count_kills}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killed}, assisted by {killer if killer else ""}'
             if metka:
                 killing_race.append(out)
             if killed in streaks and streaks[killed] > 9:
@@ -208,7 +209,8 @@ for kill in kills:
                 kills = radiant_kills
                 if kills in (5, 10, 15, 20) and kills > dire_kills:
                     metka = f'{kills}=> '
-            out = f'{kill.select(".time")[0].text} {metka}({side} - {teams[side]})-{str(kills)} {killer}(#{streaks[killer]}) kills {killed}'
+            count_kills = "-" + str(dire_kills + radiant_kills) + "- " if not ((dire_kills + radiant_kills) % 10) else ""
+            out = f'{kill.select(".time")[0].text} {metka}{count_kills}({side} - {teams[side]})-{str(kills)} {killer}(#{streaks[killer]}) kills {killed}'
             if first_kill is None:
                 first_kill = out
             if metka:
