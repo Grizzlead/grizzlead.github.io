@@ -4,14 +4,15 @@ from selenium import webdriver
 
 def info_players(side):
     kda_team = soup_main.select(f'.team-results .{side} tfoot td.r-group-1')
-    print(f'\n{side.upper() + ": " + (team_radiant if side == "radiant" else team_dire):35} KDA: {" - ".join(item.text for item in kda_team)}')
+    ban_picks = [f'{side.upper() + ": " + (team_radiant if side == "radiant" else team_dire)}']
+    print(f'\n{ban_picks[0]:35} KDA: {" - ".join(item.text for item in kda_team)}')
     team = soup_main.select(f'.team-results tr.faction-{side}')
     team_picks = soup_main.select(f'.team-results > .{side} .picks-inline > div')
     for pick in team_picks:
         temp_text = pick.text + ' ' + pick.select('a > img')[0]['alt']
         if 'Pick' in temp_text:
-            temp_text = temp_text.upper()
-        print(temp_text)
+            temp_text = '-' + temp_text.upper() + '-'
+        ban_picks.append(temp_text)
     heroes = []
     for player in team:
         lst = []
@@ -28,10 +29,14 @@ def info_players(side):
         kda = player.select(".r-group-1")
         lst.append(('kda', " - ".join(i.text.strip().ljust(2) for i in kda[:-1])))
         lst.append(('gold', float((kda[-1].text.strip())[:-1])))
+        player_inventory_items = player.select('.player-inventory-items a')
+        lst.append(('inventory items', [f'{item.text}({item.select("img")[0]["alt"]})' for item in player_inventory_items]))
         heroes.append(dict(lst))
 
     for player in sorted(heroes, key=lambda x: x['gold'], reverse=True):
         print(f"{player['hero']:20} - {player['role']:15} / {player['kda']} - {str(player['gold']) + 'k':10} / {player['line']:20} / {player['name']:30} / {player['aspect']}")
+        print(' '*10, *player['inventory items'])
+    return ban_picks
 
 def info_objectives(objective):
     result = []
@@ -188,7 +193,7 @@ for kill in kills:
                     if kills in (5, 10, 15, 20) and kills > dire_kills:
                         metka = f'{kills}=> '
             count_kills = "-" + str(dire_kills + radiant_kills) + "- " if not ((dire_kills + radiant_kills) % 10) else ""
-            out = f'{kill.select(".time")[0].text} {metka}{count_kills}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killed}, assisted by {killer if killer else ""}'
+            out = f'{kill.select(".time")[0].text} {metka}***({" ".join(tower_kill.split()) if tower_kill else " ".join(creep_kill.split())})-{kills} kills {killed}, assisted by {killer if killer else ""} {count_kills}'
             if metka:
                 killing_race.append(out)
             if killed in streaks and streaks[killed] > 9:
@@ -216,7 +221,7 @@ for kill in kills:
                 if kills in (5, 10, 15, 20) and kills > dire_kills:
                     metka = f'{kills}=> '
             count_kills = "-" + str(dire_kills + radiant_kills) + "- " if not ((dire_kills + radiant_kills) % 10) else ""
-            out = f'{kill.select(".time")[0].text} {metka}{count_kills}({side} - {teams[side]})-{str(kills)} {killer}(#{streaks[killer]}) kills {killed}'
+            out = f'{kill.select(".time")[0].text} {metka}({side} - {teams[side]})-{str(kills)} {killer}(#{streaks[killer]}) kills {killed} {count_kills}'
             if first_kill is None:
                 first_kill = out
             if metka:
@@ -263,9 +268,12 @@ times = soup_main.select('span.duration')
 print(f'\nTime of game: {times[0].text}')
 
 # Radiant team
-info_players('radiant')
+pick_radiant = info_players('radiant')
 
 # Dire team
-info_players('dire')
+pick_dire = info_players('dire')
 
 print(streaks)
+
+for r, d in zip(pick_radiant, pick_dire):
+    print(f'{r:35}{d}')
