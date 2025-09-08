@@ -6,6 +6,12 @@ def info_players(side):
     kda_team = soup_main.select(f'.team-results .{side} tfoot td.r-group-1')
     print(f'\n{side.upper() + ": " + (team_radiant if side == "radiant" else team_dire):35} KDA: {" - ".join(item.text for item in kda_team)}')
     team = soup_main.select(f'.team-results tr.faction-{side}')
+    team_picks = soup_main.select(f'.team-results > .{side} .picks-inline > div')
+    for pick in team_picks:
+        temp_text = pick.text + ' ' + pick.select('a > img')[0]['alt']
+        if 'Pick' in temp_text:
+            temp_text = temp_text.upper()
+        print(temp_text)
     heroes = []
     for player in team:
         lst = []
@@ -67,9 +73,9 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8451671758"
+# code="8451671758"
 
-scrap_site(code)
+# scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
 
 # # FILE ---------------------------------------------------------------------------------------------------------------------------------------
