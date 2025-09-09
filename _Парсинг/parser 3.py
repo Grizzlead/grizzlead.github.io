@@ -78,7 +78,7 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-# code="8451671758"
+# code="8449132115"
 
 # scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
@@ -167,6 +167,7 @@ for kill in kills:
         tormentor_kill = kill.select('span.object img[alt="Reflect"], span.object img[alt="The Shining"]')
         roshan_kill = kill.select('span.object img[alt="Roshan"]')
         suicide_kill = 'suicide' in kill.text
+        fountain_kill = 'Fountain' in kill.text
         
         killed = kill_events[0].select('img')
         killed = killed[0]['alt']
@@ -205,6 +206,8 @@ for kill in kills:
             print(f'{kill.select(".time")[0].text} ***(Roshan) kills {killer}')
         elif suicide_kill:
             print(f'{kill.select(".time")[0].text} ***(Suicide) kills {killed}')
+        elif fountain_kill:
+            print(f'{kill.select(".time")[0].text} ***(Fountain) kills {killed}')
         else:
             side = ('Dire', 'Radiant')["color-faction-radiant" in kill_events[1].attrs['class']]
             metka, out = '', ''
@@ -272,8 +275,6 @@ pick_radiant = info_players('radiant')
 
 # Dire team
 pick_dire = info_players('dire')
-
-print(streaks)
-
+print()
 for r, d in zip(pick_radiant, pick_dire):
     print(f'{r:35}{d}')
