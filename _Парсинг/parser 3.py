@@ -9,7 +9,7 @@ def info_players(side):
     team = soup_main.select(f'.team-results tr.faction-{side}')
     team_picks = soup_main.select(f'.team-results > .{side} .picks-inline > div')
     for pick in team_picks:
-        temp_text = pick.text + ' ' + pick.select('a > img')[0]['alt']
+        temp_text = ' '.join(pick.text.split()) + ' ' + pick.select('a > img')[0]['alt']
         if 'Pick' in temp_text:
             temp_text = '-' + temp_text.upper() + '-'
         ban_picks.append(temp_text)
@@ -30,7 +30,7 @@ def info_players(side):
         lst.append(('kda', " - ".join(i.text.strip().ljust(2) for i in kda[:-1])))
         lst.append(('gold', float((kda[-1].text.strip())[:-1])))
         player_inventory_items = player.select('.player-inventory-items a')
-        lst.append(('inventory items', [f'{item.text}({item.select("img")[0]["alt"]})' for item in player_inventory_items]))
+        lst.append(('inventory items', [f'{item.text.strip()}({item.select("img")[0]["alt"]})' for item in player_inventory_items]))
         heroes.append(dict(lst))
 
     for player in sorted(heroes, key=lambda x: x['gold'], reverse=True):
@@ -78,7 +78,7 @@ def scrap_site(id):
     driver.quit()
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8457241577Lsr "
+code="8464912871"
 
 scrap_site(code)
 # # SITE ---------------------------------------------------------------------------------------------------------------------------------------
