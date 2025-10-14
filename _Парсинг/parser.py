@@ -28,7 +28,7 @@ def info_players(side):
         print(f"{player['hero']:20} - {player['role']:15} / {player['kda']} - {str(player['gold']) + 'k':10} / {player['line']:20} / {player['name']:30} / {player['aspect']}")
 
 # SITE ---------------------------------------------------------------------------------------------------------------------------------------
-code="8380423919"
+code="8510884183"
 
 headers = {'User-Agent': UserAgent().chrome}
 
